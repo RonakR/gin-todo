@@ -9,7 +9,6 @@ Simple in-memory todo API using Gin.
 ## Run
 
 ```bash
-cd "/Users/ronak.raithatha@postman.com/Code/ghost town/demos/go project"
 go mod tidy
 go run .
 ```
