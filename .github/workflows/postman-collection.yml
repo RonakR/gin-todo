@@ -22,14 +22,23 @@ jobs:
 
       - name: Start API
         run: |
-          go run . &
-          for i in {1..15}; do
+          set -euo pipefail
+          go run . > /tmp/api.log 2>&1 &
+          api_pid=$!
+          for i in {1..30}; do
             if curl -sSf http://localhost:8080/health > /dev/null; then
+              echo "API started"
               exit 0
+            fi
+            if ! kill -0 "$api_pid" 2>/dev/null; then
+              echo "API process exited"
+              cat /tmp/api.log
+              exit 1
             fi
             sleep 1
           done
           echo "API did not start in time"
+          cat /tmp/api.log
           exit 1
 
       - name: Install Postman CLI (bash)
