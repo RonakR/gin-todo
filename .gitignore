@@ -1,0 +1,23 @@
+### Go ###
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary and coverage
+*.test
+*.out
+
+# Go workspace
+go.work
+go.work.sum
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
