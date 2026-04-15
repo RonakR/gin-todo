@@ -1,0 +1,7 @@
+$kind: http-request
+method: GET
+url: '{{vault:gin_todo_api_mcp_base_url}}/todos/:id'
+order: 4000
+pathVariables:
+  - key: id
+    value: '1'

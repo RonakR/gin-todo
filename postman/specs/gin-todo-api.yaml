@@ -1,0 +1,201 @@
+openapi: 3.0.3
+info:
+  title: Gin Todo API
+  version: 1.0.0
+  description: A simple Todo CRUD API built with Go and Gin framework
+servers:
+  - url: http://localhost:8080
+paths:
+  /health:
+    get:
+      summary: Health Check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /todos:
+    get:
+      summary: List all todos
+      operationId: listTodos
+      tags:
+        - Todos
+      responses:
+        '200':
+          description: A list of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+    post:
+      summary: Create a todo
+      operationId: createTodo
+      tags:
+        - Todos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTodoRequest'
+      responses:
+        '201':
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /todos/{id}:
+    get:
+      summary: Get a todo by ID
+      operationId: getTodo
+      tags:
+        - Todos
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Todo found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      summary: Update a todo
+      operationId: updateTodo
+      tags:
+        - Todos
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTodoRequest'
+      responses:
+        '200':
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete a todo
+      operationId: deleteTodo
+      tags:
+        - Todos
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '204':
+          description: Todo deleted successfully
+        '400':
+          description: Invalid ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    Todo:
+      type: object
+      required:
+        - id
+        - title
+        - completed
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Buy groceries
+        completed:
+          type: boolean
+          example: false
+    CreateTodoRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          example: Buy groceries
+    UpdateTodoRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Buy groceries and cook
+        completed:
+          type: boolean
+          example: true
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: todo not found
