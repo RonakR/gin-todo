@@ -1,0 +1,7 @@
+version: v3
+info:
+  name: Go Todo API
+  description: 'A Postman collection for the Go/Gin Todo API. Covers health check, CRUD operations on todos.'
+variable:
+  - key: base_url
+    value: 'http://localhost:8080'

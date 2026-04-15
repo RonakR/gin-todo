@@ -1,0 +1,244 @@
+openapi: 3.0.3
+info:
+  title: Go Todo API
+  version: 1.0.0
+  description: A simple Todo API built with Go and the Gin framework.
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Todos
+    description: Todo CRUD operations
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /todos:
+    get:
+      tags:
+        - Todos
+      summary: List all todos
+      operationId: listTodos
+      responses:
+        '200':
+          description: A list of all todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+
+    post:
+      tags:
+        - Todos
+      summary: Create a new todo
+      operationId: createTodo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTodoRequest'
+      responses:
+        '201':
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: title is required
+
+  /todos/{id}:
+    get:
+      tags:
+        - Todos
+      summary: Get a todo by ID
+      operationId: getTodoById
+      parameters:
+        - $ref: '#/components/parameters/TodoId'
+      responses:
+        '200':
+          description: Todo found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: invalid id
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: todo not found
+
+    patch:
+      tags:
+        - Todos
+      summary: Update a todo
+      operationId: updateTodo
+      parameters:
+        - $ref: '#/components/parameters/TodoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTodoRequest'
+      responses:
+        '200':
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid payload or no fields to update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidPayload:
+                  summary: Invalid payload
+                  value:
+                    error: invalid payload
+                noFields:
+                  summary: No fields to update
+                  value:
+                    error: no fields to update
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: todo not found
+
+    delete:
+      tags:
+        - Todos
+      summary: Delete a todo
+      operationId: deleteTodo
+      parameters:
+        - $ref: '#/components/parameters/TodoId'
+      responses:
+        '204':
+          description: Todo deleted successfully
+        '400':
+          description: Invalid ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: invalid id
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: todo not found
+
+components:
+  parameters:
+    TodoId:
+      name: id
+      in: path
+      required: true
+      description: The ID of the todo
+      schema:
+        type: integer
+        minimum: 1
+
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the todo
+          example: 1
+        title:
+          type: string
+          description: Title of the todo
+          example: Buy groceries
+        completed:
+          type: boolean
+          description: Whether the todo is completed
+          example: false
+      required:
+        - id
+        - title
+        - completed
+
+    CreateTodoRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the new todo
+          example: Buy groceries
+      required:
+        - title
+
+    UpdateTodoRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Updated title of the todo
+          example: Buy organic groceries
+        completed:
+          type: boolean
+          description: Updated completion status
+          example: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: something went wrong
+      required:
+        - error

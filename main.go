@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"io"
 	"net/http"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -109,7 +112,28 @@ func parseID(c *gin.Context) (int, bool) {
 
 func main() {
 	store := NewStore()
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Recovery())
+	router.Use(func(c *gin.Context) {
+		body, _ := io.ReadAll(c.Request.Body)
+		c.Set("requestBody", string(body))
+		c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
+		c.Next()
+	})
+	router.Use(gin.LoggerWithFormatter(func(p gin.LogFormatterParams) string {
+		body, _ := p.Keys["requestBody"].(string)
+		if body == "" {
+			body = "-"
+		}
+		return "[" + p.TimeStamp.Format(time.RFC3339) + "] " +
+			p.ClientIP + " " +
+			p.Method + " " +
+			p.Path + " " +
+			p.Request.Proto + " " +
+			strconv.Itoa(p.StatusCode) + " " +
+			p.Latency.String() + " " +
+			"body=" + body + "\n"
+	}))
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})

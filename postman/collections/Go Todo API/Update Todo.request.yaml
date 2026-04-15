@@ -1,0 +1,14 @@
+$kind: http-request
+method: PATCH
+url: '{{base_url}}/todos/1'
+order: 5000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Buy organic groceries",
+      "completed": true
+    }

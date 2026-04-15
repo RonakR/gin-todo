@@ -6,7 +6,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-postman-collection:
+  spec-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Postman CLI
+        run: |
+          curl -fsSL https://dl-cli.pstmn.io/install/linux64.sh | sh
+
+      - name: Log in to Postman CLI
+        run: postman login --with-api-key "$POSTMAN_API_KEY"
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+
+      - name: Lint OpenAPI spec
+        run: postman spec lint postman/specs/go-todo-api.yaml --report-events
+
+  test:
+    needs: spec-lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -41,7 +60,7 @@ jobs:
           cat /tmp/api.log
           exit 1
 
-      - name: Install Postman CLI (bash)
+      - name: Install Postman CLI
         run: |
           curl -fsSL https://dl-cli.pstmn.io/install/linux64.sh | sh
 
