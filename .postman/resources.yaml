@@ -2,6 +2,14 @@
 workspace:
   id: 0116eb5d-79f0-4ea6-80ea-b28ceaeac80b
 
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  specs:
+    ../postman/specs/go-todo-api.yaml: 08b28e33-6aab-471b-ae88-2477e36b4929
+  collections:
+    ../postman/collections/Go Todo API: 52145510-4b804574-1d86-49d4-bf2f-26f14ebfbbfa
+
 # All resources in the `postman/` folder are automatically registered in Local View.
 # Point to additional files outside the `postman/` folder to register them individually. Example:
 #localResources:

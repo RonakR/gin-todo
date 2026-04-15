@@ -70,4 +70,4 @@ jobs:
           POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
 
       - name: Run Postman collection
-        run: postman collection run "24492028-48dfb2f1-16b7-4aec-9202-de00934a01cd" --env-var "baseUrl=http://localhost:8080"
+        run: postman collection run "postman/collections/Go Todo API" --env-var "baseUrl=http://localhost:8080"
