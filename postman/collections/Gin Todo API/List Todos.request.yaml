@@ -1,0 +1,5 @@
+$kind: http-request
+name: 'List Todos'
+method: GET
+url: '{{base_url}}/todos'
+order: 2000
