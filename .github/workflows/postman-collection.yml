@@ -22,7 +22,7 @@ jobs:
           POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
 
       - name: Lint OpenAPI spec
-        run: postman spec lint postman/specs/todo-api.yaml --report-event
+        run: postman spec lint postman/specs/todo-api.yaml --report-events
 
   run-postman-collection:
     needs: lint-spec
