@@ -1,0 +1,11 @@
+$kind: http-request
+method: DELETE
+url: '{{vault:gin_todo_api_mcp_base_url}}/todos/{{todoId}}'
+order: 6000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 204", function () {
+          pm.response.to.have.status(204);
+      });

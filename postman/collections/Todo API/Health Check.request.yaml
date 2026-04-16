@@ -1,0 +1,21 @@
+$kind: http-request
+method: GET
+url: '{{vault:gin_todo_api_mcp_base_url}}/health'
+order: 1000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response has status property equal to ok", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData).to.have.property("status");
+          pm.expect(jsonData.status).to.eql("ok");
+      });
+
+      pm.test("Response time is below 500ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });

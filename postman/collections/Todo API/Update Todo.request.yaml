@@ -1,0 +1,36 @@
+$kind: http-request
+method: PATCH
+url: '{{vault:gin_todo_api_mcp_base_url}}/todos/{{todoId}}'
+order: 5000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Buy groceries and cook",
+      "completed": true
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Title equals Buy groceries and cook", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.title).to.eql("Buy groceries and cook");
+      });
+
+      pm.test("Completed is true", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.completed).to.eql(true);
+      });
+
+      pm.test("Id matches todoId collection variable", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.id).to.eql(Number(pm.collectionVariables.get("todoId")));
+      });

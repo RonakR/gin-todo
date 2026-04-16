@@ -1,0 +1,4 @@
+$kind: collection
+name: Todo API
+variables:
+  todoId: ""

@@ -1,0 +1,28 @@
+$kind: http-request
+method: GET
+url: '{{vault:gin_todo_api_mcp_base_url}}/todos/{{todoId}}'
+order: 4000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response body has id, title, and completed properties", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData).to.have.property("id");
+          pm.expect(jsonData).to.have.property("title");
+          pm.expect(jsonData).to.have.property("completed");
+      });
+
+      pm.test("Id matches todoId collection variable", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.id).to.eql(Number(pm.collectionVariables.get("todoId")));
+      });
+
+      pm.test("Title is a non-empty string", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.title).to.be.a("string").and.not.empty;
+      });

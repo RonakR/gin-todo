@@ -1,0 +1,44 @@
+$kind: http-request
+method: POST
+url: '{{vault:gin_todo_api_mcp_base_url}}/todos'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Buy groceries"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 201", function () {
+          pm.response.to.have.status(201);
+      });
+
+      pm.test("Response body has id, title, and completed properties", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData).to.have.property("id");
+          pm.expect(jsonData.id).to.be.a("number");
+          pm.expect(jsonData).to.have.property("title");
+          pm.expect(jsonData.title).to.be.a("string");
+          pm.expect(jsonData).to.have.property("completed");
+          pm.expect(jsonData.completed).to.be.a("boolean");
+      });
+
+      pm.test("New todo has completed set to false", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.completed).to.eql(false);
+      });
+
+      pm.test("Title matches Buy groceries", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.title).to.eql("Buy groceries");
+      });
+
+      pm.test("Save todoId to collection variables", function () {
+          pm.collectionVariables.set("todoId", pm.response.json().id);
+      });
