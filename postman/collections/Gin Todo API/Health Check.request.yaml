@@ -1,0 +1,17 @@
+$kind: http-request
+name: Health Check
+method: GET
+url: '{{vault:gin_todo_api_mcp_base_url}}/health'
+order: 1000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response has status ok", function () {
+          const json = pm.response.json();
+          pm.expect(json.status).to.eql("ok");
+      });

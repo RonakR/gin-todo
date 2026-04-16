@@ -1,0 +1,35 @@
+$kind: http-request
+name: Update Todo
+method: PATCH
+url: '{{vault:gin_todo_api_mcp_base_url}}/todos/{{todoId}}'
+order: 5000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Updated title",
+      "completed": true
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Todo is updated", function () {
+          const json = pm.response.json();
+          pm.expect(json.title).to.eql("Updated title");
+          pm.expect(json.completed).to.eql(true);
+      });
+
+      pm.test("Response has correct structure", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("id").that.is.a("number");
+          pm.expect(json).to.have.property("title").that.is.a("string");
+          pm.expect(json).to.have.property("completed").that.is.a("boolean");
+      });

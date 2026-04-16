@@ -1,0 +1,198 @@
+openapi: 3.0.3
+info:
+  title: Gin Todo API
+  description: A simple Todo CRUD API built with Go and the Gin framework.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Returns the health status of the API.
+      operationId: healthCheck
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /todos:
+    get:
+      summary: List Todos
+      description: Returns a list of all todo items.
+      operationId: listTodos
+      responses:
+        '200':
+          description: A list of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+    post:
+      summary: Create Todo
+      description: Creates a new todo item with the given title.
+      operationId: createTodo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTodoRequest'
+      responses:
+        '201':
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid request — title is required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /todos/{id}:
+    get:
+      summary: Get Todo
+      description: Returns a single todo item by its ID.
+      operationId: getTodo
+      parameters:
+        - $ref: '#/components/parameters/TodoId'
+      responses:
+        '200':
+          description: The requested todo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      summary: Update Todo
+      description: Updates an existing todo item. At least one field (title or completed) must be provided.
+      operationId: updateTodo
+      parameters:
+        - $ref: '#/components/parameters/TodoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTodoRequest'
+      responses:
+        '200':
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid request — invalid ID, invalid payload, or no fields to update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete Todo
+      description: Deletes a todo item by its ID.
+      operationId: deleteTodo
+      parameters:
+        - $ref: '#/components/parameters/TodoId'
+      responses:
+        '204':
+          description: Todo deleted successfully
+        '400':
+          description: Invalid ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  parameters:
+    TodoId:
+      name: id
+      in: path
+      required: true
+      description: The unique identifier of the todo item
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier
+          example: 1
+        title:
+          type: string
+          description: Title of the todo item
+          example: Buy groceries
+        completed:
+          type: boolean
+          description: Whether the todo is completed
+          example: false
+      required:
+        - id
+        - title
+        - completed
+    CreateTodoRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the new todo item
+          example: Buy groceries
+      required:
+        - title
+    UpdateTodoRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Updated title
+          example: Updated title
+        completed:
+          type: boolean
+          description: Updated completion status
+          example: true
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: todo not found

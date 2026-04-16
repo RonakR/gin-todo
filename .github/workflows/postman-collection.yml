@@ -6,7 +6,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  lint-spec:
+    name: Lint OpenAPI Spec
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Postman CLI
+        run: |
+          curl -fsSL https://dl-cli.pstmn.io/install/linux64.sh | sh
+
+      - name: Log in to Postman CLI
+        run: postman login --with-api-key "$POSTMAN_API_KEY"
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+
+      - name: Lint OpenAPI spec
+        run: postman spec lint --spec-path postman/specs/Gin\ Todo\ API.yaml --report-event
+
   run-postman-collection:
+    needs: lint-spec
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -51,4 +71,4 @@ jobs:
           POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
 
       - name: Run Postman collection
-        run: postman collection run "24492028-48dfb2f1-16b7-4aec-9202-de00934a01cd" --env-var "baseUrl=http://localhost:8080"
+        run: postman collection run "postman/collections/Gin Todo API" --env-var "baseUrl=http://localhost:8080" —report-events

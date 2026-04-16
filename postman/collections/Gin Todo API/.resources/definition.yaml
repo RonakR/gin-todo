@@ -1,0 +1,4 @@
+$kind: collection
+name: Gin Todo API
+variables:
+  todoId: ""
