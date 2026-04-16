@@ -1,10 +1,10 @@
 $kind: http-request
+name: Health Check
 method: GET
-url: '{{vault:gin_todo_api_mcp_base_url}}/health'
+url: "{{baseUrl}}/health"
 order: 1000
 scripts:
   - type: afterResponse
-    language: text/javascript
     code: |-
       pm.test("Status code is 200", function () {
           pm.response.to.have.status(200);
@@ -19,3 +19,4 @@ scripts:
       pm.test("Response time is below 500ms", function () {
           pm.expect(pm.response.responseTime).to.be.below(500);
       });
+    language: text/javascript
